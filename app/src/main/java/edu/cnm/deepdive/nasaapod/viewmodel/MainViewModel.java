@@ -15,7 +15,6 @@ import edu.cnm.deepdive.nasaapod.service.ApodService;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.functions.Consumer;
-import io.reactivex.schedulers.Schedulers;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
@@ -60,18 +59,23 @@ public class MainViewModel extends AndroidViewModel implements LifecycleObserver
     throwable.setValue(null);
     pending.add(
         repository.get(date)
-            .doOnSuccess(apod::postValue)
-            .doOnError(throwable::postValue)
-            .subscribe()
+            .subscribe(
+                apod::postValue,
+                throwable::postValue
+            )
     );
   }
 
   public void getImage(@NonNull Apod apod, @NonNull Consumer<String> pathConsumer) {
     throwable.setValue(null);
-    repository.getImage(apod)
-        .doOnSuccess(pathConsumer)
-        .doOnError(throwable::postValue)
-        .subscribe();
+    pending.add(
+        repository.getImage(apod)
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                pathConsumer,
+                throwable::postValue
+            )
+    );
   }
 
   @SuppressWarnings("unused")
