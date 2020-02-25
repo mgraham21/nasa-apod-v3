@@ -105,11 +105,11 @@ public class MainViewModel extends AndroidViewModel implements LifecycleObserver
     throwable.setValue(null);
     pending.add(
         repository.downloadImage(apod)
-          .observeOn(AndroidSchedulers.mainThread())
-          .subscribe(
-              onSuccess,
-              throwable::setValue
-          )
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                onSuccess,
+                throwable::setValue
+            )
     );
   }
 
